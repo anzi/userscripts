@@ -37,7 +37,7 @@ var makeTimeline = function (time) {
   }
 
   return time_array.join(":") + "," + milliseconds;
-};
+}
 
 function loadCaption (selector) {
   var caption = caption_array[selector.selectedIndex - 1];
@@ -89,7 +89,8 @@ function loadCaption (selector) {
             srt_output   += i + "\n" + makeTimeline(start) + ' --> ' +
                                 makeTimeline(end) + "\n" + textarea.value + "\n\n";
           }
-        };
+        }
+
         textarea = null;
 
         GM_openInTab("data:text/plain;charset=utf-8," + encodeURIComponent(srt_output));
@@ -98,6 +99,7 @@ function loadCaption (selector) {
       }
 
       selector.options[0].selected = true;
+
     }
   });
 }
@@ -110,7 +112,7 @@ function loadCaptions (select) {
       if (xhr.responseText === "") {
         return select.options[0].textContent = 'No captions.';
       }
-    
+
       var caption, option, caption_info,
           captions = new DOMParser().parseFromString(xhr.responseText, "text/xml").
                                      getElementsByTagName('track');
@@ -128,7 +130,7 @@ function loadCaptions (select) {
         option.textContent = caption_info.lang_name;
 
         select.appendChild(option);
-      };
+      }
 
       select.options[0].textContent = 'Download captions.';
       select.disabled               = false;
@@ -137,17 +139,18 @@ function loadCaptions (select) {
 }
 
 function loadFormats (select) {
+  var type
 
-    for (var type in FORMATS) {
-        option              = document.createElement('option');
-        option.value        = type;
-        option.textContent  = FORMATS[type];
+  for (type in FORMATS) {
+    option             = document.createElement('option');
+    option.value       = type;
+    option.textContent = FORMATS[type];
 
-        select.appendChild(option);
-    }
+    select.appendChild(option);
+  }
 
-    select.options[0].textContent   = 'Select caption format.';
-    select.disabled                 = false;
+  select.options[0].textContent = 'Select caption format.';
+  select.disabled               = false;
 }
 
 (function () {
@@ -176,8 +179,8 @@ function loadFormats (select) {
       format_select    = document.createElement('select'),
       format_option    = document.createElement('option');
 
-  format_div.setAttribute( 'style', 'display: inline-block;' );
-  
+  format_div.setAttribute('style', 'display: inline-block;');
+
   format_select.id         = FORMAT_SELECTOR_ID;
   format_select.disabled   = true;
 
@@ -185,7 +188,7 @@ function loadFormats (select) {
   format_option.selected       = true;
 
   format_select.appendChild(format_option);
-  
+
   format_div.appendChild(format_select);
 
   controls.appendChild(format_div);
