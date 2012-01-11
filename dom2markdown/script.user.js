@@ -667,13 +667,18 @@ OL.prototype.bullet = function () {
 
 function LI (root, parent, dom) {
   Node.call(this, root, parent, dom)
-  this.list.items.push(this)
+
+  if (this.list) {
+    this.list.items.push(this)
+  }
 }
 
 LI.prototype.__proto__ = Node.prototype
 NODES.LI               = LI
 
 LI.prototype.compile = function () {
+  if (!this.list) return
+
   var lines = this.lines.slice(0)
     , first = lines.shift()
     , line, last
