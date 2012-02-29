@@ -1,38 +1,7 @@
-// ==UserScript==  
-// @name           USO, meet Markdown.
-// @namespace      http://userscripts.org/users/tim
-// @description    Markdown gets married to Userscript.org
-// @include        http://userscripts.org/topics/*
-// @require        http://updater.usotools.co.cc/70901.js
-// @require        http://userscripts.org/scripts/source/70908.user.js
-// @require        http://userscripts.org/scripts/source/104570.user.js
-// ==/UserScript==
-
-// The MIT License
-// 
-// Copyright (c) 2011 Tim Smart
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-
 var Editor, Guide, Page, Post, htmlToMarkdown, markdownToHtml, page, showdown;
-var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
 Post = (function() {
+
   function Post(page, element) {
     this.page = page;
     this.element = element;
@@ -42,9 +11,12 @@ Post = (function() {
       this.initFromGuide();
     }
   }
+
   Post.prototype.element = null;
+
   Post.prototype.initFromTopic = function() {
-    var authorCont, linkCont, nameLink;
+    var authorCont, linkCont, nameLink,
+      _this = this;
     authorCont = this.element.getElementsByClassName('author')[0];
     nameLink = authorCont.getElementsByClassName('fn')[0].getElementsByTagName('a')[0];
     linkCont = authorCont.getElementsByTagName('p')[0];
@@ -58,15 +30,11 @@ Post = (function() {
     this.userHref = nameLink.href;
     this.body = this.element.getElementsByClassName('body')[0].innerHTML;
     this.belongsToUser = authorCont.getElementsByClassName('edit')[0] ? true : false;
-    this.insertUtility('Quote', linkCont, __bind(function() {
-      return this.quote();
-    }, this));
-    if (!this.belongsToUser) {
-      return this.insertUtility('Report', linkCont, __bind(function(event) {
-        return this.report(event);
-      }, this));
-    }
+    return this.insertUtility('Quote', linkCont, function() {
+      return _this.quote();
+    });
   };
+
   Post.prototype.insertUtility = function(name, cont, callback) {
     var link, span;
     if ('function' === typeof cont) {
@@ -92,6 +60,7 @@ Post = (function() {
       return cont.appendChild(span);
     }
   };
+
   Post.prototype.quote = function() {
     var element, fragment, holder, html, properSelection, range, selection;
     selection = window.getSelection();
@@ -103,9 +72,7 @@ Post = (function() {
       element = range.commonAncestorContainer;
       while (element) {
         if ('TD' === element.nodeName && 0 === element.id.indexOf('post-body-')) {
-          if ('post-body-' + this.id === element.id) {
-            properSelection = true;
-          }
+          if ('post-body-' + this.id === element.id) properSelection = true;
           break;
         }
         element = element.parentNode;
@@ -123,78 +90,68 @@ Post = (function() {
     }
     return page.editor.insertQuote(html, this.userName, this.userId, this.id);
   };
-  Post.prototype.report = function(event) {
-    var comments, reportHtml;
-    comments = prompt('Do you want to mention any specific details about the offender?', 'This post contained spam.');
-    reportHtml = "<p>I believe the user <a href='/users/" + this.userId + "'>" + this.userName + "</a> has                made an inappropiate <a href='" + (location.pathname + location.search) + "#post-body-" + this.id + "'>post</a>                in the topic <a href='" + location.pathname + "'>" + page.title + "</a>.</p>";
-    if (!comments) {
-      return;
-    } else if ('' !== comments) {
-      reportHtml += "<p>" + comments + "</p>";
-    }
-    return GM_xmlhttpRequest({
-      url: "http://" + location.host + "/topics/9/posts",
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      data: ("authenticity_token=" + (encodeURIComponent(unsafeWindow.auth_token)) + "&post%5Bbody%5D=") + ("" + (encodeURIComponent(reportHtml)) + "&commit=Post+reply"),
-      onload: function() {
-        return event.target.textContent = 'Reported!';
-      }
-    });
-  };
+
   return Post;
+
 })();
+
 Guide = (function() {
+
   function Guide(page, element) {
     this.page = page;
   }
+
   return Guide;
+
 })();
+
 Editor = (function() {
+
   function Editor(page, element) {
     this.page = page;
     this.element = element;
-    if ('DIV' === element.nodeName) {
-      this.initFromReply();
-    }
+    if ('DIV' === element.nodeName) this.initFromReply();
   }
+
   Editor.prototype.element = null;
+
   Editor.prototype.initFromReply = function() {
-    var form, oldReplyInit, oldSetReplyId, textarea;
+    var form, oldReplyInit, oldSetReplyId, textarea,
+      _this = this;
     oldSetReplyId = unsafeWindow.EditForm.setReplyId;
-    unsafeWindow.EditForm.setReplyId = __bind(function() {
+    unsafeWindow.EditForm.setReplyId = function() {
       var textarea;
       oldSetReplyId.apply(unsafeWindow.EditForm, arguments);
-      this.element = document.getElementById('edit');
-      this.modifyEntryContainer(this.element);
-      this.textarea = document.getElementById('edit_post_body');
-      textarea = this.textarea;
-      this.addShortcuts(this.textarea);
-      this.element.getElementsByTagName('form')[0].elements[3].addEventListener('click', function() {
+      _this.element = document.getElementById('edit');
+      _this.modifyEntryContainer(_this.element);
+      _this.textarea = document.getElementById('edit_post_body');
+      textarea = _this.textarea;
+      _this.addShortcuts(_this.textarea);
+      _this.element.getElementsByTagName('form')[0].elements[3].addEventListener('click', function() {
         return textarea.value = markdownToHtml(textarea.value);
       }, false);
-      return this.textarea.value = htmlToMarkdown(this.textarea.value);
-    }, this);
+      return _this.textarea.value = htmlToMarkdown(_this.textarea.value);
+    };
     this.modifyEntryContainer(this.element);
     form = this.element.getElementsByTagName('form')[0];
     textarea = document.getElementById('post_body');
-    this.element.getElementsByTagName('form')[0].elements[2].addEventListener('click', __bind(function() {
+    this.element.getElementsByTagName('form')[0].elements[2].addEventListener('click', function() {
       return textarea.value = markdownToHtml(textarea.value);
-    }, this), false);
+    }, false);
     this.addShortcuts(textarea);
     oldReplyInit = unsafeWindow.ReplyForm.init;
-    unsafeWindow.ReplyForm.init = __bind(function() {
+    unsafeWindow.ReplyForm.init = function() {
       oldReplyInit.call(unsafeWindow.ReplyForm);
-      this.element = document.getElementById('reply');
-      return this.textarea = document.getElementById('post_body');
-    }, this);
+      _this.element = document.getElementById('reply');
+      return _this.textarea = document.getElementById('post_body');
+    };
     return this.element = null;
   };
+
   Editor.prototype.modifyEntryContainer = function(element) {
     return element.getElementsByTagName('h5')[1].textContent = 'Use Markdown to format your reply.';
   };
+
   Editor.prototype.insertQuote = function(html, username, userId, postId) {
     var modify, previous;
     if (this.ensureElement()) {
@@ -205,11 +162,10 @@ Editor = (function() {
     }
     html = html.replace(/<!--.+-->/, '').trim();
     html = ("<blockquote><strong><a href='/users/" + userId + "'>" + username + "</a></strong>") + ("&nbsp;<a href='#posts-" + postId + "'>wrote</a>:<br />" + html + "</blockquote>");
-    if (modify) {
-      html = modify(html);
-    }
+    if (modify) html = modify(html);
     return this.textarea.value = htmlToMarkdown(html);
   };
+
   Editor.prototype.insertAtCaret = function(text) {
     var end, start;
     start = this.textarea.selectionStart;
@@ -220,6 +176,7 @@ Editor = (function() {
     this.insertText(text, start, end);
     return this;
   };
+
   Editor.prototype.insertText = function(text, start, end) {
     var pos, val;
     end || (end = start);
@@ -232,6 +189,7 @@ Editor = (function() {
     }
     return this;
   };
+
   Editor.prototype.ensureElement = function() {
     if (!this.element) {
       this.openReply();
@@ -243,9 +201,11 @@ Editor = (function() {
       return true;
     }
   };
+
   Editor.prototype.openReply = function() {
     return unsafeWindow.ReplyForm.init();
   };
+
   Editor.prototype.addShortcuts = function(textarea) {
     var editor;
     editor = this;
@@ -260,30 +220,36 @@ Editor = (function() {
       }
     }, false);
   };
+
   Editor.prototype.newline = function() {
     var indent, last_line, pos;
     pos = this.textarea.selectionStart;
-    if (pos < 1) {
-      return this.insertAtCaret('\n');
-    }
+    if (pos < 1) return this.insertAtCaret('\n');
     last_line = (this.textarea.value.slice(0, pos)).lastIndexOf('\n');
     indent = /^(?:\s|>)*/.exec(this.textarea.value.slice(last_line + 1, pos));
     return this.insertAtCaret('\n' + indent);
   };
+
   return Editor;
+
 })();
+
 Page = (function() {
+
   function Page() {}
+
   Page.prototype.init = function() {
     var path;
     path = location.pathname;
-    if (0 === path.indexOf('/topics')) {
-      return this.initFromTopic();
-    }
+    if (0 === path.indexOf('/topics')) return this.initFromTopic();
   };
+
   Page.prototype.comments = [];
+
   Page.prototype.editor = null;
+
   Page.prototype.title = document.title;
+
   Page.prototype.initFromTopic = function() {
     var post, postElements, _i, _len;
     postElements = document.getElementsByClassName('post');
@@ -294,17 +260,24 @@ Page = (function() {
     }
     return this.title = document.getElementById('topic-title').firstChild.textContent.trim().replace(/\s+/g, ' ');
   };
+
   return Page;
+
 })();
+
 showdown = new Showdown.converter();
+
 htmlToMarkdown = function(html, callback) {
   var div;
   div = document.createElement('div');
   div.innerHTML = html;
   return USO.dom2markdown(div);
 };
+
 markdownToHtml = function(markdown) {
   return showdown.makeHtml(markdown);
 };
+
 page = new Page();
+
 page.init();

@@ -60,12 +60,6 @@ class Post
     @insertUtility 'Quote', linkCont, =>
       @quote()
 
-    # Insert the Report link, depending if the post
-    # belongs to the current user or not
-    if not @belongsToUser
-      @insertUtility 'Report', linkCont, (event) =>
-        @report event
-
   # Shortcut for inserting a utility link into the post
   # author section. cont is an optional container, to save
   # looking for it again
@@ -126,30 +120,6 @@ class Post
         holder = range = fragment = null
       else html = @body
     page.editor.insertQuote html, @userName, @userId, @id
-
-  # This function will report the post as spam, to the USO spam topic
-  report: (event) ->
-    comments   = prompt 'Do you want to mention any specific details about the offender?',
-                        'This post contained spam.'
-
-    reportHtml = "<p>I believe the user <a href='/users/#{@userId}'>#{@userName}</a> has
-                made an inappropiate <a href='#{location.pathname + location.search}#post-body-#{@id}'>post</a>
-                in the topic <a href='#{location.pathname}'>#{page.title}</a>.</p>"
-
-    if not comments
-      return
-    else if '' isnt comments
-      reportHtml += "<p>#{comments}</p>"
-
-    GM_xmlhttpRequest
-      url:    "http://#{location.host}/topics/9/posts"
-      method: 'POST'
-      headers:
-        'Content-Type': 'application/x-www-form-urlencoded'
-      data:   "authenticity_token=#{encodeURIComponent unsafeWindow.auth_token}&post%5Bbody%5D=" +
-              "#{encodeURIComponent reportHtml}&commit=Post+reply"
-      onload: ->
-        event.target.textContent = 'Reported!'
 
 #### Guide class
 # Represents a guide on Userscripts.org
