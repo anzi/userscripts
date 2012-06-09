@@ -4,7 +4,6 @@
 // @description    Instead of returning to the Inbox after archiving or deleting a conversation, you switch to the next one in line.
 // @include        http://mail.google.com*
 // @include        https://mail.google.com*
-// @require        http://updater.usotools.co.cc/37986.js
 // @require        http://userscripts.org/scripts/source/56812.user.js
 // ==/UserScript==
 

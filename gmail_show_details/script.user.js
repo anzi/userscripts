@@ -5,7 +5,6 @@
 // @include        http://mail.google.com/*
 // @include        https://mail.google.com/*
 // @require        http://userscripts.org/scripts/source/56812.user.js
-// @require        http://updater.usotools.co.cc/57495.js
 // ==/UserScript==
 
 // Initialise the GMailAPI

@@ -3,7 +3,6 @@
 // @namespace      http://userscripts.org/users/63868
 // @include        http://mail.google.com*
 // @include        https://mail.google.com*
-// @require        http://updater.usotools.co.cc/38212.js
 // @require        http://userscripts.org/scripts/source/56812.user.js
 // ==/UserScript==
 

@@ -7,7 +7,6 @@
 # @namespace      http://userscripts.org/users/tim  
 # @description    Markdown gets married to Userscript.org  
 # @include        http://userscripts.org/topics/*  
-# @require        http://updater.usotools.co.cc/70901.js  
 # @require        http://userscripts.org/scripts/source/70908.user.js  
 # @require        http://userscripts.org/scripts/source/104570.user.js  
 # ==/UserScript==
