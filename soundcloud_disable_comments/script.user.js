@@ -1,5 +1,6 @@
 // ==UserScript==
 // @name           Soundcloud Disable Comments
+// @description    Remove comment elements from Soundcloud waveforms.
 // @namespace      http://userscripts.org/users/tim
 // @match          http*://soundcloud.com/*
 // @copyright      2012 Tim Smart
