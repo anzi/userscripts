@@ -54,23 +54,51 @@ function clickElement (element) {
 }
 
 // ====
-// Find all the toggles and pseudo click them
-var toggles = null // Object (xpath snapshot)
+// Remove comments when found
 
-toggles = document.evaluate(
-	'.//a[@class="comments-toggle"]'
-,	document
-,	null
-,	XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
-,	null
+function removeComments () {
+	var ols		= null // XPathResult
+	var ol		= null // DomElement
+	var toggles	= null // XPathResult (Comment toggles)
+	var toggle	= null // DomElement (Comment toggle)
+	var container	= null // DomElement (Track container)
+
+	ols		= document.evaluate(
+		'.//ol[@class="timestamped-comments"]'
+	,	document
+	,	null
+	,	XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+	,	null
+	)
+
+	toggles		= document.evaluate(
+		'.//a[@class="comments-toggle"]'
+	,	document
+	,	null
+	,	XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+	,	null
+	)
+
+	for (var i = 0, il = toggles.snapshotLength; i < il; i++) {
+		toggle = toggles.snapshotItem(i)
+		toggle.parentNode.removeChild(toggle)
+	}
+
+	for (var i = 0, il = ols.snapshotLength; i < il; i++) {
+		ol 			= ols.snapshotItem(i)
+		container		= ol.parentNode.parentNode.parentNode
+		container.className	= container.className + ' no-comments'
+		ol.parentNode.removeChild(ol)
+	}
+}
+
+document.addEventListener(
+	'DOMNodeInserted'
+,	removeComments
+,	false
 )
 
-var toggle = null // DomElement
-
-for (var i = 0, il = toggles.snapshotLength; i < il; i++) {
-	toggle = toggles.snapshotItem(i)
-	clickElement(toggle)
-}
+removeComments()
 
 })();
 
