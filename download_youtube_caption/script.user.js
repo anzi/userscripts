@@ -10,6 +10,7 @@
 
 var PLAYER              = unsafeWindow.document.getElementById('movie_player'),
     VIDEO_ID            = unsafeWindow.yt.getConfig('VIDEO_ID'),
+    TITLE               = unsafeWindow.yt.playerConfig.args.title,
     FORMATS             = {srt: '.srt', text: 'text'},
     FORMAT_SELECTOR_ID  = 'format_selector',
     caption_array = [];
