@@ -158,7 +158,7 @@ function loadFormats (select) {
   var div      = document.createElement('div'),
       select   = document.createElement('select'),
       option   = document.createElement('option'),
-      controls = document.getElementById('watch-headline-user-info');
+      controls = document.getElementById('watch7-headline');
 
   div.setAttribute( 'style', 'display: inline-block;' );
 
