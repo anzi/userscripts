@@ -2,7 +2,8 @@
 // @name           Soundcloud Disable Comments
 // @description    Remove comment elements from Soundcloud waveforms.
 // @namespace      http://userscripts.org/users/tim
-// @match          http*://soundcloud.com/*
+// @include        http://soundcloud.com/*
+// @include        https://soundcloud.com/*
 // @copyright      2012 Tim Smart
 // @license        MIT. Full license in source code.
 // ==/UserScript==
@@ -43,11 +44,11 @@ var unsafe = unsafeWindow || window
 function clickElement (element) {
 	var click = document.createEvent('MouseEvents')
 	click.initMouseEvent(
-		'click', true, true
-	,	document.defaultView
-	,	1, 0, 0, 0, 0
-	,	false, false, false, false
-	,	0, null
+	  'click', true, true
+	, document.defaultView
+	, 1, 0, 0, 0, 0
+	, false, false, false, false
+	, 0, null
 	)
 	element.dispatchEvent(click)
 
@@ -58,47 +59,46 @@ function clickElement (element) {
 // Remove comments when found
 
 function removeComments () {
-	var ols		= null // XPathResult
-	var ol		= null // DomElement
-	var toggles	= null // XPathResult (Comment toggles)
-	var toggle	= null // DomElement (Comment toggle)
-	var container	= null // DomElement (Track container)
+	var canvas	= null // XPathResult
+	var divs	= null // XPathResult (Comment toggles)
+	var commentform	= null // XPathResult (Comment box)
+	var element	= null // DomElement
 
-	ols		= document.evaluate(
-		'.//ol[@class="timestamped-comments"]'
-	,	document
-	,	null
-	,	XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
-	,	null
+	canvas		= document.evaluate(
+	  './/canvas[contains(@class, "waveformCommentsCanvas")]/..'
+	, document
+	, null
+	, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+	, null
 	)
 
-	toggles		= document.evaluate(
-		'.//a[@class="comments-toggle"]'
-	,	document
-	,	null
-	,	XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
-	,	null
+	divs		= document.evaluate(
+	  './/div[contains(@class, "waveformComments")]/..'
+	, document
+	, null
+	, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+	, null
 	)
 
-	for (var i = 0, il = toggles.snapshotLength; i < il; i++) {
-		toggle = toggles.snapshotItem(i)
-		toggle.parentNode.removeChild(toggle)
+	commentforms	= document.querySelectorAll('div.sound__comments')
+
+	for (var i = 0, il = canvas.snapshotLength; i < il; i++) {
+		element = canvas.snapshotItem(i)
+		element.parentNode.removeChild(element)
 	}
 
-	for (var i = 0, il = ols.snapshotLength; i < il; i++) {
-		ol 			= ols.snapshotItem(i)
-		container		= ol.parentNode.parentNode.parentNode
-		container.className	= container.className + ' no-comments'
-		ol.parentNode.removeChild(ol)
+	for (var i = 0, il = divs.snapshotLength; i < il; i++) {
+		element = divs.snapshotItem(i)
+		element.parentNode.removeChild(element)
+	}
+
+	for (var i = 0, il = commentforms.length; i < il; i++) {
+		element = commentforms[i]
+		element.parentNode.removeChild(element)
 	}
 }
 
-document.addEventListener(
-	'DOMNodeInserted'
-,	removeComments
-,	false
-)
-
+new MutationObserver(removeComments).observe(document, { childList : true })
 removeComments()
 
 })();
