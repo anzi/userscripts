@@ -34,26 +34,7 @@
 ;(function () {
 
 // For multiple environments.
-var unsafe = unsafeWindow || window
-
-/**
- * Click a element with a script generated click event.
- *
- * @param {DomElement} element
- */
-function clickElement (element) {
-	var click = document.createEvent('MouseEvents')
-	click.initMouseEvent(
-	  'click', true, true
-	, document.defaultView
-	, 1, 0, 0, 0, 0
-	, false, false, false, false
-	, 0, null
-	)
-	element.dispatchEvent(click)
-
-	return click
-}
+var unsafe 	= unsafeWindow || window
 
 // ====
 // Remove comments when found
@@ -98,7 +79,8 @@ function removeComments () {
 	}
 }
 
-new MutationObserver(removeComments).observe(document, { childList : true })
+var observer	= new unsafe.MutationObserver(removeComments)
+observer.observe(document, { childList : true, subtree : true })
 removeComments()
 
 })();
