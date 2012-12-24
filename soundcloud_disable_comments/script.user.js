@@ -34,7 +34,13 @@
 ;(function () {
 
 // For multiple environments.
-var unsafe 	= unsafeWindow || window
+var unsafe 		= unsafeWindow || window
+// Find a MutationObserver constructor.
+var MutationObserver	= unsafe.MutationObserver
+
+if (!MutationObserver && unsafe.WebKitMutationObserver) {
+	MutationObserver = unsafe.WebKitMutationObserver
+}
 
 // ====
 // Remove comments when found
@@ -79,7 +85,7 @@ function removeComments () {
 	}
 }
 
-var observer	= new unsafe.MutationObserver(removeComments)
+var observer	= new MutationObserver(removeComments)
 observer.observe(document, { childList : true, subtree : true })
 removeComments()
 
