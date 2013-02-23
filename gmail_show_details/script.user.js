@@ -12,14 +12,14 @@ var api = new USO.Gmail()
 
 api.on('view:cv', function () {
   var view  = this.view
-    , links = view.ownerDocument.evaluate
-      ( './/span[contains(., "show details")]'
+  var links = view.ownerDocument.evaluate(
+        './/span[contains(., "show details")]'
       , view
       , null
       , XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE
       , null
       )
-    , link
+  var link  = null
 
   for (var i = 0; i < links.snapshotLength; i++) { 
     link = links.snapshotItem(i)
