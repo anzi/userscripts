@@ -148,32 +148,13 @@ class Editor
       oldSetReplyId.apply unsafeWindow.EditForm, arguments
 
       @element = document.getElementById 'edit'
-      @modifyEntryContainer @element
 
       @textarea = document.getElementById 'edit_post_body'
       textarea  = @textarea
       @addShortcuts @textarea
 
-      # Modify the submit button to convert the textarea
-      # content before sending it off to USO
-      @element.getElementsByTagName('form')[0].
-               elements[3].
-               addEventListener('click', ->
-         textarea.value = markdownToHtml textarea.value
-      , false)
-      @textarea.value = htmlToMarkdown @textarea.value
-
-    # For the normal reply box
-    @modifyEntryContainer @element
-
-    form     = @element.getElementsByTagName('form')[0]
     textarea = document.getElementById 'post_body'
 
-    @element.getElementsByTagName('form')[0].
-             elements[2].
-             addEventListener('click', =>
-       textarea.value = markdownToHtml textarea.value
-    , false)
     @addShortcuts textarea
 
     oldReplyInit = unsafeWindow.ReplyForm.init
@@ -183,12 +164,6 @@ class Editor
       @textarea = document.getElementById 'post_body'
 
     @element = null
-
-  # This function takes a reply 'containter' div, and chops and changes
-  # it to our liking
-  modifyEntryContainer: (element) ->
-    element.getElementsByTagName('h5')[1]
-           .textContent = 'Use Markdown to format your reply.'
 
   # This function takes html, the User-Name, a User ID and a post ID,
   # converts it to markdown, then inserts the
@@ -200,11 +175,12 @@ class Editor
         previous + html
 
     html = html.replace(/<!--.+-->/, '').trim()
-    html = "<blockquote><strong><a href='/users/#{userId}'>#{username}</a></strong>" +
-           "&nbsp;<a href='#posts-#{postId}'>wrote</a>:<br />#{html}</blockquote>"
+    html = "<blockquote><p><strong><a href='/users/#{userId}'>#{username}</a></strong>" +
+           "&nbsp;<a href='#posts-#{postId}'>wrote</a>:</p>#{html}</blockquote>"
 
     html = modify html if modify
     @textarea.value = htmlToMarkdown html
+    this
 
   # Insert text at the caret position
   insertAtCaret: (text) ->
