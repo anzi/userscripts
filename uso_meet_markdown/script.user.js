@@ -56,14 +56,15 @@ Post = (function() {
   Post.prototype.element = null;
 
   Post.prototype.initFromTopic = function() {
-    var authorCont, linkCont, nameLink,
+    var authorCont, linkCont, nameLink, useragent,
       _this = this;
     authorCont = this.element.getElementsByClassName('author')[0];
     nameLink = authorCont.getElementsByClassName('fn')[0].getElementsByTagName('a')[0];
+    useragent = authorCont.getElementsByClassName('useragent')[0];
     linkCont = authorCont.getElementsByTagName('p')[0];
-    if (!linkCont) {
+    if (!linkCont || useragent !== linkCont.nextElementSibling) {
       linkCont = document.createElement('p');
-      authorCont.insertBefore(linkCont, authorCont.getElementsByClassName('useragent')[0]);
+      authorCont.insertBefore(linkCont, useragent);
     }
     this.id = /\d+$/.exec(this.element.id)[0];
     this.userId = nameLink.getAttribute('user_id');

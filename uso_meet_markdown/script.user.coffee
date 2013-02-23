@@ -37,12 +37,12 @@ class Post
     authorCont = @element.getElementsByClassName('author')[0]
     nameLink   = authorCont.getElementsByClassName('fn')[0]
                            .getElementsByTagName('a')[0]
+    useragent  = authorCont.getElementsByClassName('useragent')[0]
     linkCont   = authorCont.getElementsByTagName('p')[0]
 
-    if not linkCont
+    if not linkCont or useragent isnt linkCont.nextElementSibling
       linkCont = document.createElement 'p'
-      authorCont.insertBefore linkCont,
-                              authorCont.getElementsByClassName('useragent')[0]
+      authorCont.insertBefore linkCont, useragent
 
     @id       = /\d+$/.exec(@element.id)[0]
     @userId   = nameLink.getAttribute 'user_id'
