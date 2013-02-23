@@ -63,11 +63,11 @@ function loadCaption (selector) {
           if (0 <= previous_start) {
             textarea.innerHTML = captions[i - 1].textContent.replace(/</g, "&lt;").
                                                              replace( />/g, "&gt;" );
-            if (output_format === FORMATS['text']) {  
-                srt_output += textarea.value + "\n";
+            if (output_format === FORMATS['text']) {
+              srt_output += textarea.value + "\n";
             } else {
-                srt_output += i + "\n" + makeTimeline(previous_start) + ' --> ' +
-                              makeTimeline(start) + "\n" + textarea.value + "\n\n";
+              srt_output += (i + 1) + "\n" + makeTimeline(previous_start) + ' --> ' +
+                            makeTimeline(start) + "\n" + textarea.value + "\n\n";
             }
             previous_start = null;
           }
@@ -84,9 +84,9 @@ function loadCaption (selector) {
 
           textarea.innerHTML = caption.textContent.replace(/</g, "&lt;").replace(/>/g, "&gt;");
           if (output_format === FORMATS['text']) {  
-              srt_output += textarea.value + "\n";
+            srt_output += textarea.value + "\n";
           } else {
-            srt_output   += i + "\n" + makeTimeline(start) + ' --> ' +
+            srt_output   += (i + 1) + "\n" + makeTimeline(start) + ' --> ' +
                                 makeTimeline(end) + "\n" + textarea.value + "\n\n";
           }
         }
