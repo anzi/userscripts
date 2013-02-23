@@ -59,16 +59,18 @@ function createLink (name, path) {
 }
 
 // Check for the /home link
-var home = document.evaluate
-    ( './/ul[@class="login_status"]/li/a[@href="/home"]'
-    , document
-    , null
-    , XPathResult.FIRST_ORDERED_NODE_TYPE
-    , null
-    )
-    .singleNodeValue
-  , first = true
-  , name, link
+var home = document.evaluate(
+  './/ul[@class="login_status"]/li/a[@href="/home"]'
+, document
+, null
+, XPathResult.FIRST_ORDERED_NODE_TYPE
+, null
+)
+  .singleNodeValue
+
+var first = true
+var name  = null
+var link  = null
 
 // The user is not logged in
 if (!home) {
