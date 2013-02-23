@@ -205,13 +205,13 @@ if (typeof USO !== 'object') {
   G.prototype.click = function (element) {
     var click = document.createEvent('MouseEvents')
 
-    click.initMouseEvent
-      ( 'click', true, true
-      , document.defaultView
-      , 1, 0, 0, 0, 0
-      , false, false, false, false
-      , 0, null
-      )
+    click.initMouseEvent(
+      'click', true, true
+    , document.defaultView
+    , 1, 0, 0, 0, 0
+    , false, false, false, false
+    , 0, null
+    )
     element.dispatchEvent(click)
 
     return this
