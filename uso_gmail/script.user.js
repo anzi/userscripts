@@ -34,13 +34,23 @@ if (typeof USO !== 'object') {
   var G = USO.Gmail = function Gmail (options) {
     options || (options = {})
 
-    this.window  = unsafeWindow || window
-    this.api     = null
-    this.version = options.version || 2
-    this._events = {}
-    this.loaded  = false
+    this.window     = unsafeWindow || window
+    this.canvas_win = null
+    this.canvas_doc = null
+    this.api        = null
+    this.version    = options.version || 2
+    this._events    = {}
+    this.loaded     = false
+    this._Observer  = null
+    this._observers =
+      { loading     : null
+      , compose     : null
+      }
+    this.cache      =
+      { composers   : []
+      }
 
-    var gmail = this
+    var gmail       = this
 
     try {
       if (  this.window.gmonkey
@@ -56,15 +66,59 @@ if (typeof USO !== 'object') {
       this.emit('error', err)
     }
 
+    function updateElements () {
+      if (null === gmail.compose_wrap) return
+
+      gmail._observers.loading.disconnect()
+      gmail.loaded = true
+      gmail.emit('loaded', gmail.api)
+
+      gmail._observers.compose = new gmail._Observer(composeObserver)
+      gmail._observers.compose.observe(
+        gmail.compose_wrap
+      , { childList : true, subtree : true }
+      )
+    }
+
+    function composeObserver () {
+      if (!gmail.is_composing) {
+        for (var i = 0, il = gmail.cache.composers.length; i < il; i++) {
+          gmail.emit('compose:closed', gmail.cache.composers[i])
+        }
+        gmail.cache.composers = []
+
+        return
+      }
+
+      var composers = gmail.compose_wrap.querySelectorAll('div.nH.nn > div.no')
+      composers.__proto__ = Array.prototype
+
+      var oldcomposers = gmail.cache.composers
+      var compose      = null
+
+      for (var i = 0, il = composers.length; i < il; i++) {
+        composer = composers[i]
+        if (-1 === oldcomposers.indexOf(composer)) {
+          gmail.emit('compose', composer)
+        }
+      }
+
+      for (var i = 0, il = oldcomposers.length; i < il; i++) {
+        composer = oldcomposers[i]
+        if (-1 === composers.indexOf(composer)) {
+          gmail.emit('compose:closed', composer)
+        }
+      }
+
+      gmail.cache.composers = composers
+    }
+
     this.on('loaded:api', function () {
       this.api.registerViewChangeCallback(function () {
         var view = gmail.view_type
 
         if (!view) {
           return
-        } else if (!gmail.loaded) {
-          gmail.loaded = true
-          gmail.emit('loaded', gmail.api)
         }
 
         gmail.emit('view', view)
@@ -95,6 +149,21 @@ if (typeof USO !== 'object') {
       this.api.registerThreadViewChangeCallback(function (thread) {
         gmail.emit('thread:view', thread)
       })
+
+      this.canvas_doc = this.canvas.ownerDocument
+      this.canvas_win = this.canvas_doc.defaultView
+
+      if (this.canvas_win.MutationObserver) {
+        this._Observer = this.canvas_win.MutationObserver
+      } else if (this.canvas_win.WebKitMutationObserver) {
+        this._Observer = this.canvas_win.WebKitMutationObserver
+      }
+
+      this._observers.loading = new this._Observer(updateElements)
+      this._observers.loading.observe(
+        this.canvas_doc.body
+      , { childList : true, subtree : true }
+      )
     })
   }
 
@@ -146,6 +215,19 @@ if (typeof USO !== 'object') {
     return this
   }
 
+  G.prototype.__defineGetter__('compose_wrap', function () {
+    if (this.cache.compose_wrap) return this.cache.compose_wrap
+
+    var wrap = this.canvas_doc.querySelector('body > div.dw')
+    this.cache.compose_wrap = wrap
+
+    return this.cache.compose_wrap
+  })
+
+  G.prototype.__defineGetter__('is_composing', function () {
+    return !this.hasClass(this.compose_wrap, 'np')
+  })
+
   G.prototype.__defineGetter__('info', function () {
     return this.window.gmonkey.info(this.version)
   })
@@ -155,7 +237,9 @@ if (typeof USO !== 'object') {
   })
 
   G.prototype.__defineGetter__('canvas', function () {
-    return this.api.getCanvasElement()
+    if (this.cache.canvas) return this.cache.canvas
+    this.cache.canvas = this.api.getCanvasElement()
+    return this.cache.canvas
   })
 
   G.prototype.__defineGetter__('view', function () {
@@ -215,5 +299,9 @@ if (typeof USO !== 'object') {
     element.dispatchEvent(click)
 
     return this
+  }
+
+  G.prototype.hasClass = function (element, classname) {
+    return element.classList.contains(classname)
   }
 })(USO);
