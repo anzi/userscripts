@@ -278,7 +278,7 @@ if (typeof USO !== 'object') {
     return this.api.getActionElements()
   })
 
-  G.prototype.__defineGetter__('converstation_diabled', function () {
+  G.prototype.__defineGetter__('converstation_disabled', function () {
     return this.api.isConversationViewDisabled()
   })
 
